@@ -2,15 +2,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="jp.matsuda.lottery.LotteryEntryActivity" >
+    android:padding="@dimen/activity_margin" >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/aboveScrollView"
+        style="@style/text"
+        android:layout_alignParentTop="true"
+        android:text="@string/entry_text" />
+
+    <ScrollView style="@style/scroll_view" >
+
+        <TableLayout
+            android:id="@+id/table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0" >
+        </TableLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/belowScrollView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal" >
+
+        <TextView style="@style/border" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                style="@style/text"
+                android:text="@string/lottery_Quantity" />
+            
+            <LinearLayout
+                style="@style/frame_border" >
+               <TextView
+                   android:id="@+id/lottery_Quantity"
+                   android:background="#ffffffff"
+                   android:layout_width="50dp"
+                   android:layout_height="30dp"
+                   android:textSize="15sp" /> 
+            </LinearLayout>
+            
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/entry_button1" />
+            
+        </LinearLayout>
+        
+        <Button
+            android:id="@+id/doneButton"
+            style="@style/below_button"
+            android:text="@string/entry_button2" />
+    </LinearLayout>
 
 </RelativeLayout>
