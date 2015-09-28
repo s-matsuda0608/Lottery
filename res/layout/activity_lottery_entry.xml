@@ -38,12 +38,12 @@
 
             <TextView
                 style="@style/text"
-                android:text="@string/lottery_Quantity" />
+                android:text="@string/lottery_quantity" />
             
             <LinearLayout
                 style="@style/frame_border" >
                <TextView
-                   android:id="@+id/lottery_Quantity"
+                   android:id="@+id/lottery_quantity"
                    android:background="#ffffffff"
                    android:layout_width="50dp"
                    android:layout_height="30dp"
