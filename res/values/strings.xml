@@ -5,7 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="entry_text">抽選対象を入力してください。</string>
-    <string name="lottery_Quantity">抽選数：</string>
+    <string name="lottery_quantity">抽選数：</string>
     <string name="entry_button1">入力欄追加</string>
     <string name="entry_button2">入力完了</string>
     <string name="confirm_text1">抽選対象を確認して下さい。</string>
