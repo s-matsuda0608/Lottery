@@ -5,16 +5,20 @@
 
     <LinearLayout style="@style/frame_border" >
         <EditText
+            android:id="@+id/lotteryForm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="7"
             android:textSize="15sp"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:background="#ffffffff" />
     </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="deleteTableRow"
+        android:onClick="deleteRowView"
         android:text="@string/deleteButton" />
 
 </TableRow>
