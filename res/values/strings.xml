@@ -16,8 +16,7 @@
     <string name="lottery_button">次へ</string>
     <string name="result_text1">抽選結果</string>
     <string name="result_text2">が当選しました！！</string>
-    <string name="result_button1">もう一度</string>
-    <string name="result_button2">終了</string>
+    <string name="result_button">もう一度</string>
     <string name="deleteButton">削除</string>
 
 

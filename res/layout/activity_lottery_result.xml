@@ -50,14 +50,11 @@
             android:orientation="horizontal" >
             
             <Button
-                android:id="@+id/appRestertButton"
+                android:id="@+id/appRestartButton"
                 style="@style/below_button"
-                android:text="@string/result_button1" />
+                android:text="@string/result_button" />
             
-            <Button
-                android:id="@+id/appEndButton"
-                style="@style/below_button"
-                android:text="@string/result_button2" />
+
         </LinearLayout>
     </LinearLayout>
 
