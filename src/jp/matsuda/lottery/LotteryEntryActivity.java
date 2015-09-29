@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -15,8 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-
-import com.google.gson.Gson;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -46,22 +43,6 @@ public class LotteryEntryActivity extends AppCompatActivity {
 
 		setListener();
 
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-
-		if(resultCode == RESULT_OK && requestCode == R.layout.activity_lottery_confirm && null != intent) {
-			Gson gson = new Gson();
-			lotteryList = gson.fromJson(intent.getStringExtra(Const.LOTTERY_LIST),ArrayList.class);
-			String lotteryQuantity = intent.getStringExtra(Const.LOTTERY_QUANTITY);
-
-			lotteryQuantityForm.setText(lotteryQuantity);
-			for(int i = 0; i < lotteryList.size(); i++){
-				addRowView(lotteryList.get(i));
-			}	
-		}	
 	}
 
 	private void addRowView(String str) {
@@ -125,7 +106,6 @@ public class LotteryEntryActivity extends AppCompatActivity {
 				}
 			}
 		});
-
 	}
 
 	private void onClickAddButton() {
@@ -137,7 +117,10 @@ public class LotteryEntryActivity extends AppCompatActivity {
 		if(hasBlankData()){
 			Toast.makeText(getApplicationContext(),Const.HAS_BLANK_DATA_MSG, Toast.LENGTH_SHORT).show();
 		}else{
+			
 			Intent intent = new Intent(getApplication(), LotteryConfirmActivity.class);
+			lotteryList.clear();
+			
 			for(int i = 0; i < table.getChildCount(); i++){
 				TableRow tr = (TableRow) table.getChildAt(i);
 				LinearLayout ll = (LinearLayout)tr.getChildAt(0);
@@ -145,12 +128,10 @@ public class LotteryEntryActivity extends AppCompatActivity {
 				String str = ed.getText().toString();
 				lotteryList.add(str);
 			}
-			Gson gson = new Gson();
-			String lotteryListStr = gson.toJson(lotteryList);
-			intent.putExtra(Const.LOTTERY_LIST, lotteryListStr);
+			intent.putStringArrayListExtra(Const.LOTTERY_LIST, lotteryList);
 			intent.putExtra(Const.LOTTERY_QUANTITY, lotteryQuantityForm.getText().toString());
-			int requestCode  = Const.REQUEST_CODE;
-			startActivityForResult(intent, requestCode);
+			
+			startActivity(intent);
 		}
 	}
 
@@ -162,8 +143,8 @@ public class LotteryEntryActivity extends AppCompatActivity {
 		final NumberPicker np = (NumberPicker) v.findViewById(R.id.numberPicker);
 
 		np.setMaxValue(table.getChildCount() - 1);
-		np.setMinValue(0);
-		np.setValue(0);
+		np.setMinValue(1);
+		np.setValue(1);
 
 		lotteryQuantityFormDialog.setView(np);
 		lotteryQuantityFormDialog.setTitle("抽選数入力");
@@ -174,11 +155,7 @@ public class LotteryEntryActivity extends AppCompatActivity {
 			}	
 		});		
 
-		lotteryQuantityFormDialog.setNegativeButton(Const.CANCEL, new DialogInterface.OnClickListener(){		
-			public void onClick(DialogInterface dialog, int which) {	
-				//何もしない
-			}	
-		});
+		lotteryQuantityFormDialog.setNegativeButton(Const.CANCEL, null);
 
 		lotteryQuantityFormDialog.create().show();		
 
@@ -188,11 +165,9 @@ public class LotteryEntryActivity extends AppCompatActivity {
 	private boolean hasBlankData() {
 		try{
 			for(int i = 0; i <formListSize; i++){
-				System.out.println("count : "+i);
 				TableRow tr = (TableRow) table.getChildAt(i);
 				LinearLayout ll = (LinearLayout)tr.getChildAt(0);
 				EditText ed = (EditText)ll.getChildAt(0);
-				System.out.println(i+" : "+ed.getText().toString());
 				if(ed.getText().equals(null) || ed.getText().toString().equals("")){
 					return true;
 				}
@@ -204,7 +179,6 @@ public class LotteryEntryActivity extends AppCompatActivity {
 		}catch(IndexOutOfBoundsException e){	
 			return true;
 		}
-		System.out.println("false");
 		return false;	
 
 	}

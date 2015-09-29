@@ -1,18 +1,21 @@
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:gravity="center_vertical" >
 
     <LinearLayout style="@style/frame_border" >
         <EditText
             android:id="@+id/lotteryForm"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#ffffffff"
             android:inputType="text"
-            android:maxLength="7"
-            android:textSize="15sp"
-            android:padding="10dp"
-            android:background="#ffffffff" />
+            android:maxLength="10"
+            android:padding="5dp"
+            android:textSize="20sp"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
     <Button

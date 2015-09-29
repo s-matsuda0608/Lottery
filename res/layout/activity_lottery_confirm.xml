@@ -6,20 +6,21 @@
 
     <TextView
         android:id="@+id/aboveScrollView"
+        style="@style/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text"
         android:layout_alignParentTop="true"
         android:text="@string/confirm_text1" />
 
     <ScrollView
-        style="@style/scroll_view">
+        style="@style/scroll_view"
+        android:padding="10dp" >
 
         <LinearLayout
             android:id="@+id/lotteryItemView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:orientation="vertical" >
         </LinearLayout>
     </ScrollView>
@@ -44,30 +45,27 @@
             <TextView
                 style="@style/text"
                 android:text="@string/lottery_quantity" />
-            
+
             <TextView
                 android:id="@+id/lotteryQuantityView"
                 style="@style/text" />
-            
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal" >
-            
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
+
             <Button
                 android:id="@+id/OKButton"
                 style="@style/below_button"
                 android:text="@string/confirm_button1" />
-            
+
             <Button
                 android:id="@+id/backButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/below_button"
                 android:text="@string/confirm_button2" />
-            
         </LinearLayout>
     </LinearLayout>
 

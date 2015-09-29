@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -33,15 +35,15 @@ public class LotteryConfirmActivity extends AppCompatActivity{
 		lotteryQuantityView = (TextView) findViewById(R.id.lotteryQuantityView);
 
 		Intent intent = getIntent();
-		Gson gson = new Gson();
 
-		lotteryList = gson.fromJson(intent.getStringExtra(Const.LOTTERY_LIST), ArrayList.class);
+		lotteryList = intent.getStringArrayListExtra(Const.LOTTERY_LIST);
 		lotteryQuantity = intent.getStringExtra(Const.LOTTERY_QUANTITY);
 
 		createConfirmView();
 		setListener();
 
 	}
+
 
 	private void setListener() {
 		
@@ -63,10 +65,8 @@ public class LotteryConfirmActivity extends AppCompatActivity{
 	
 	private void onClickOKButton() {
 		Intent intent = new Intent(getApplication(), NowLotteryActivity.class);
-		Gson gson = new Gson();
 
-		String lotteryListStr = gson.toJson(lotteryList);
-		intent.putExtra(Const.LOTTERY_LIST, lotteryListStr);
+		intent.putExtra(Const.LOTTERY_LIST, lotteryList);
 		intent.putExtra(Const.LOTTERY_QUANTITY, lotteryQuantity);
 
 		startActivity(intent);
@@ -74,23 +74,18 @@ public class LotteryConfirmActivity extends AppCompatActivity{
 	}
 
 	private void onClickbackButton() {
-		Intent intent = new Intent(getApplication(), LotteryEntryActivity.class);
-		Gson gson = new Gson();
-
-		String lotteryListStr = gson.toJson(lotteryList);
-		intent.putExtra(Const.LOTTERY_LIST, lotteryListStr);
-		intent.putExtra(Const.LOTTERY_QUANTITY, lotteryQuantity);
-
-		setResult(RESULT_OK, intent);
 		finish();
-
-
-	}	
+	}
 
 	private void createConfirmView() {
-		System.out.println(lotteryList.size());
+
+		lotteryItemView.removeAllViews();
+		
 		for(int i = 0; i < lotteryList.size(); i++){	
 			TextView tv = new TextView(this);
+			tv.setTextColor(Color.BLACK);
+			tv.setTextSize(20);
+			tv.setGravity(Gravity.CENTER_HORIZONTAL);
 			tv.setText(lotteryList.get(i));
 			lotteryItemView.addView(tv);
 		}	

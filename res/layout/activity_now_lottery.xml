@@ -22,8 +22,7 @@
                 android:textSize="30sp"
                 android:padding="20dp"
                 android:layout_gravity="center_horizontal"
-                android:background="#ffffffff"
-                android:text="松田翔平" />
+                android:textColor="#000" />
         
         <TextView
             style="@style/text"
@@ -32,13 +31,14 @@
     </LinearLayout>
     
     <ScrollView
-        style="@style/scroll_view" >
+        style="@style/scroll_view" 
+        android:padding="10dp">
         <LinearLayout
             android:id="@+id/winnersView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center_horizontal" >
+            android:layout_gravity="center_horizontal" >
             
         </LinearLayout>
     </ScrollView>

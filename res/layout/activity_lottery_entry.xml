@@ -47,13 +47,15 @@
                    android:background="#ffffffff"
                    android:layout_width="50dp"
                    android:layout_height="30dp"
-                   android:textSize="15sp" /> 
+                   android:textSize="20sp"
+                   android:textColor="#000" /> 
             </LinearLayout>
             
             <Button
                 android:id="@+id/addButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="7dp"
                 android:text="@string/entry_button1" />
             
         </LinearLayout>
