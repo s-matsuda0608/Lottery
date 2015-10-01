@@ -20,20 +20,46 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * @author excite_2
+ * 抽選画面のActivity
+ * 入力された抽選項目のリストと抽選数を受け取り、抽選項目のリスト中から抽選数分の要素を選び
+ * 当選リストとして抽選結果画面に渡す。
+ */
 public class NowLotteryActivity extends AppCompatActivity{
 
+	/** 抽選項目のリスト */
 	private ArrayList<String> lotteryList = new ArrayList<String>();
+	
+	/** 当選した項目のリスト */
 	private ArrayList<String> winnersList = new ArrayList<String>();
+	
+	/** 抽選している様子を表示するTextView */
 	private TextView lotteryView;
+	
+	/** 当選した項目のリストを表示するLinearLayout */
 	private LinearLayout winnersView;
+	
+	/** 次へボタン */
 	private Button nextButton;
+	
+	/** 抽選数 */
 	private String lotteryQuantity;
 	
+	/** SoundPoolのインスタンス */
 	private SoundPool soundPool;
+	
+	/** ドラムロールの音楽ファイルのID */
 	private int drumrollId;
-	private int winnersSoundId;
+	
+	/** シンバル音の音楽ファイルのID */
+	private int cymbalId;
+	
+	/** ドラムロール再生ID stopするときに使用する*/
 	private int drumrollPlayingId;
-	private int winnersPlayingId;
+	
+	/** シンバル音再生ID stopするときに使用する*/
+	private int cymbalPlayingId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +84,10 @@ public class NowLotteryActivity extends AppCompatActivity{
 	protected void onResume(){
 		super.onResume();
 		
+		//音楽のファイルのロード
 		soundPool = new SoundPool(2,AudioManager.STREAM_MUSIC,0);
 		drumrollId = soundPool.load(this, R.raw.drumroll, 1);
-		winnersSoundId = soundPool.load(this, R.raw.cymbal,1);
+		cymbalId = soundPool.load(this, R.raw.cymbal,1);
 		
 	}
 	
@@ -68,11 +95,15 @@ public class NowLotteryActivity extends AppCompatActivity{
 	protected void onPause(){
 		super.onPause();
 		
+		//音楽がロードされたままになることを防ぐ
 		soundPool.unload(drumrollId);
-		soundPool.unload(winnersSoundId);
+		soundPool.unload(cymbalId);
 		System.out.println("call onPause()");
 	}
 
+	/**
+	 * 次へボタンのリスナを登録する
+	 */
 	private void setListener() {
 		nextButton.setOnClickListener(new OnClickListener(){
 			@Override
@@ -82,24 +113,33 @@ public class NowLotteryActivity extends AppCompatActivity{
 		});
 	}
 
+	/**
+	 * シンバル音のストップ
+	 * 当選した項目のリストのサイズが抽選数より小さい時は次の抽選を開始。
+	 * 当選した項目のリストのサイズが抽選数より大きい時は抽選を終了。
+	 */
 	private void onClickNextButton() {
 		int lotteryQuantityInt = 0;
 		try{
 			lotteryQuantityInt = Integer.parseInt(lotteryQuantity);
-		}catch(NumberFormatException e){	
+		}catch(NumberFormatException e){
 			e.printStackTrace();
-		}	
+		}
 
-		soundPool.stop(winnersPlayingId);	
+		soundPool.stop(cymbalPlayingId);
 
-		if(winnersList.size() < lotteryQuantityInt){	
-			beginLottery();
+		if(winnersList.size() < lotteryQuantityInt){
+			beginNextLottery();
 		}else{
-			endAllLottery();
+			startNextActivity();
 		}
 	}
 
-	private void endAllLottery() {
+	/**
+	 * このActivityをfinishして次のActivityをスタートする。
+	 * このとき当選したものリストを次のActivityで受け取れるようにする。
+	 */
+	private void startNextActivity() {
 
 		Intent intent = new Intent(getApplication(), LotteryResultActivity.class);
 		intent.putStringArrayListExtra(Const.WINNERS_LIST, winnersList);
@@ -108,15 +148,20 @@ public class NowLotteryActivity extends AppCompatActivity{
 		NowLotteryActivity.this.finish();
 	}
 
-	private void beginLottery() {
+	/**
+	 * 抽選中に次へボタンを押せないようにする。
+	 * CountDownTimerをセット・スタートし、ドラムロールを鳴らす。
+	 */
+	private void beginNextLottery() {
 		nextButton.setEnabled(false);
-		MyCountDownTimer cdt = new MyCountDownTimer(4000, 100);
+		MyCountDownTimer cdt = new MyCountDownTimer();
 
 		drumrollPlayingId = soundPool.play(drumrollId,1.0F,1.0F,0,-1,1.0F);
 		cdt.start();
 
 	}
 
+	//端末のバックキーを無効にする
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		if (event.getAction()==KeyEvent.ACTION_DOWN) {
@@ -128,6 +173,11 @@ public class NowLotteryActivity extends AppCompatActivity{
 		return super.dispatchKeyEvent(event);
 	}
 
+	
+	/**
+	 * @param str
+	 * パラメータとして受け取ったStingを、TextViewとして当選リストのビューに追加する。
+	 */
 	private void addWinningItemView(String str) {
 		TextView tv = new TextView(this);
 		tv.setTextColor(Color.BLACK);
@@ -139,18 +189,26 @@ public class NowLotteryActivity extends AppCompatActivity{
 	}
 
 
+	/**
+	 * @author excite_2
+	 * カウントダウン中、ドラムロールを鳴らす、lotteryViewのTextを入れ替える。
+	 * カウントダウン終了後、シンバルの音を鳴らす、lotteryViewにランダムで選出された項目を表示する。
+	 */
 	class MyCountDownTimer extends CountDownTimer{
 
 		int index;
 
-		public MyCountDownTimer(long millisInFuture, long countDownInterval) {
-			super(millisInFuture, countDownInterval);
+		/**
+		 * CountDownTimerクラスのコンストラクタを呼び出す。
+		 */
+		public MyCountDownTimer() {
+			super(4000, 100);
 			index = 0;
 		}
 
 		@Override
 		public void onTick(long millisUntilFinished) {
-			lotteryView.setText(lotteryList.get(index));	
+			lotteryView.setText(lotteryList.get(index));
 
 			if(index == lotteryList.size() - 1){	
 				index = 0;
@@ -174,7 +232,7 @@ public class NowLotteryActivity extends AppCompatActivity{
 			lotteryView.setText(winner);
 			addWinningItemView(winner);
 			
-			winnersPlayingId = soundPool.play(winnersSoundId,1.0F,1.0F,0,-1,1.0F);
+			cymbalPlayingId = soundPool.play(cymbalId,1.0F,1.0F,0,-1,1.0F);
 
 			lotteryList.remove(winnerIndex);
 			winnersList.add(winner);

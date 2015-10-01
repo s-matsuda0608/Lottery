@@ -32,5 +32,10 @@ public class Const {
 	/** ダイアログのキャンセルボタン */
 	protected static final String CANCEL = "キャンセル";
 	
+	/** CountDownTimerの引数、カウントする時間(ms) */
+	protected static final long millisInFuture = 4000;
+	
+	/** CountDownTimerの引数、カウントダウン中にonTick()メソッドを呼び出す間隔(ms) */
+	protected static final long countDownInterval = 100;
 
 }
