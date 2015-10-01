@@ -16,10 +16,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * @author excite_2
+ * 抽選結果画面のActivity
+ * 当選した項目を表示し、ボタンを押すと抽選エントリー画面に戻る。
+ */
 public class LotteryResultActivity extends AppCompatActivity{
 
+	
+	/** もう一度ボタン */
 	Button appRestartButton;
+	
+	/** 当選した項目のリストを表示するLinearLayout */
 	LinearLayout winnersView;
+	
+	/** 当選した項目のリスト */
 	ArrayList<String> winnersList = new ArrayList<String>();
 
 	@Override
@@ -51,6 +62,9 @@ public class LotteryResultActivity extends AppCompatActivity{
 	}				
 
 
+	/**
+	 * もう一度ボタンのリスナ登録
+	 */
 	private void setListener() {
 		appRestartButton.setOnClickListener(new OnClickListener(){
 			@Override
@@ -60,12 +74,23 @@ public class LotteryResultActivity extends AppCompatActivity{
 		});
 	}
 
+	/**
+	 * 抽選エントリー画面に戻る
+	 * 始めの抽選エントリー画面のActivityからこのActivityまでのスタックを削除する
+	 */
 	private void onClickAppRestartButton() {
 		Intent intent = new Intent(getApplication(), LotteryEntryActivity.class);
+		
+		//これまでのActivityスタックの削除するフラグを立てる
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		
 		startActivity(intent);
+		
 	}
 
+	/**
+	 * 当選した項目のリストをwinnersViewに表示する
+	 */
 	private void createWinersView() {
 		for(int i = 0; i < winnersList.size(); i++){	
 			TextView tv = new TextView(this);
