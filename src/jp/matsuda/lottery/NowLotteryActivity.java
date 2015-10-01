@@ -7,7 +7,8 @@ import com.google.gson.Gson;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -21,14 +22,18 @@ import android.widget.TextView;
 
 public class NowLotteryActivity extends AppCompatActivity{
 
-	ArrayList<String> lotteryList = new ArrayList<String>();
-	ArrayList<String> winnersList = new ArrayList<String>();
-	TextView lotteryView;
-	LinearLayout winnersView;
-	Button nextButton;
-	String lotteryQuantity;
-	MediaPlayer drumroll;
-	MediaPlayer winnerSound;
+	private ArrayList<String> lotteryList = new ArrayList<String>();
+	private ArrayList<String> winnersList = new ArrayList<String>();
+	private TextView lotteryView;
+	private LinearLayout winnersView;
+	private Button nextButton;
+	private String lotteryQuantity;
+	
+	private SoundPool soundPool;
+	private int drumrollId;
+	private int winnersSoundId;
+	private int drumrollPlayingId;
+	private int winnersPlayingId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +50,27 @@ public class NowLotteryActivity extends AppCompatActivity{
 		lotteryQuantity = intent.getStringExtra(Const.LOTTERY_QUANTITY);
 
 		setListener();
-		initSound();
-
 
 	}
-
-	private void initSound() {
-		drumroll = MediaPlayer.create(this, R.raw.drumroll);
-		drumroll .setLooping(true);
-		drumroll.seekTo(0);
-
-		winnerSound = MediaPlayer.create(this, R.raw.winners);
-		winnerSound.setLooping(true);
-		winnerSound.seekTo(0);
-
-
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onResume(){
+		super.onResume();
+		
+		soundPool = new SoundPool(2,AudioManager.STREAM_MUSIC,0);
+		drumrollId = soundPool.load(this, R.raw.drumroll, 1);
+		winnersSoundId = soundPool.load(this, R.raw.cymbal,1);
+		
+	}
+	
+	@Override
+	protected void onPause(){
+		super.onPause();
+		
+		soundPool.unload(drumrollId);
+		soundPool.unload(winnersSoundId);
+		System.out.println("call onPause()");
 	}
 
 	private void setListener() {
@@ -79,13 +90,13 @@ public class NowLotteryActivity extends AppCompatActivity{
 			e.printStackTrace();
 		}	
 
-		winnerSound.stop();	
+		soundPool.stop(winnersPlayingId);	
 
 		if(winnersList.size() < lotteryQuantityInt){	
 			beginLottery();
-		}else{	
+		}else{
 			endAllLottery();
-		}	
+		}
 	}
 
 	private void endAllLottery() {
@@ -98,11 +109,11 @@ public class NowLotteryActivity extends AppCompatActivity{
 	}
 
 	private void beginLottery() {
-		drumroll.start();
-		nextButton.setEnabled(true);
-		MyCountDownTimer cdt = new MyCountDownTimer(5000, 200);
-		cdt.start();
+		nextButton.setEnabled(false);
+		MyCountDownTimer cdt = new MyCountDownTimer(4000, 100);
 
+		drumrollPlayingId = soundPool.play(drumrollId,1.0F,1.0F,0,-1,1.0F);
+		cdt.start();
 
 	}
 
@@ -139,7 +150,7 @@ public class NowLotteryActivity extends AppCompatActivity{
 
 		@Override
 		public void onTick(long millisUntilFinished) {
-			((TextView)findViewById(R.id.lotteryView)).setText(lotteryList.get(index));	
+			lotteryView.setText(lotteryList.get(index));	
 
 			if(index == lotteryList.size() - 1){	
 				index = 0;
@@ -151,22 +162,24 @@ public class NowLotteryActivity extends AppCompatActivity{
 
 		@Override
 		public void onFinish() {
-			drumroll.stop();
-
+			
 			Random rnd = new Random();
 			int winnerIndex = rnd.nextInt(lotteryList.size());
 			String winner = lotteryList.get(winnerIndex);
 
-			((TextView)findViewById(R.id.lotteryView)).setText(winner);
+			System.out.println("drumroll停止処理始まり");
+			soundPool.stop(drumrollPlayingId);
+			System.out.println("drumroll停止処理終わり");
+			
+			lotteryView.setText(winner);
 			addWinningItemView(winner);
+			
+			winnersPlayingId = soundPool.play(winnersSoundId,1.0F,1.0F,0,-1,1.0F);
 
 			lotteryList.remove(winnerIndex);
 			winnersList.add(winner);
 
 			nextButton.setEnabled(true);
-
-			winnerSound.start();
-
 
 		}
 
