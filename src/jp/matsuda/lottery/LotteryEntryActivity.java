@@ -21,13 +21,29 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+/**
+ * @author excite_2
+ * 抽選エントリー画面のActivity
+ * 入力フォームを表示し、任意数ある抽選項目と抽選数の入力を受け付ける。
+ */
 public class LotteryEntryActivity extends AppCompatActivity {
 
+	/** 抽選項目の入力欄を追加するTableLayout */
 	TableLayout table;
+
+	/** 入力欄追加ボタン */
 	Button addButton;
+
+	/** 入力完了ボタン */
 	Button doneButton;
+
+	/** 抽選数のTextView */
 	TextView lotteryQuantityForm;
+
+	/** 抽選項目入力欄の数 */
 	int formListSize;
+
+	/** 内部データとして保持する抽選項目のリスト */
 	ArrayList<String> lotteryList = new ArrayList<String>();
 
 	@Override
@@ -35,6 +51,7 @@ public class LotteryEntryActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lottery_entry);
 
+		//ビューの取得
 		table = (TableLayout) findViewById(R.id.table);
 		addButton = (Button) findViewById(R.id.addButton);
 		doneButton = (Button) findViewById(R.id.doneButton);
@@ -45,6 +62,12 @@ public class LotteryEntryActivity extends AppCompatActivity {
 
 	}
 
+	/**
+	 * @param str
+	 * tableにentry_container.xmlで定義されたTableRowを追加する。
+	 * 追加するTableRowが持つlotteryFormにパラメータのstrをセットする。
+	 * TableRowを追加した時にformListSizeをインクリメントする。
+	 */
 	private void addRowView(String str) {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View rowView = inflater.inflate(R.xml.entry_container, null);
@@ -58,6 +81,12 @@ public class LotteryEntryActivity extends AppCompatActivity {
 
 	}
 
+	/**
+	 * @param v
+	 * tableからパラメータvの親であるTableRowを削除する。
+	 * formListSizeをデクリメントする。
+	 * lotteryQuantityFormのtextを消去する。
+	 */
 	public void deleteRowView(View v){
 		TableRow tr = (TableRow) v.getParent();
 		int rowNumber = tr.getId();
@@ -71,15 +100,21 @@ public class LotteryEntryActivity extends AppCompatActivity {
 			}
 		}
 		formListSize--;
-		
+
 		deleteLotteryQuantity();
 
 	}
 
+	/**
+	 * lotteryQuantityFormにブランクのStringをセットする。
+	 */
 	private void deleteLotteryQuantity() {
 		lotteryQuantityForm.setText("");
 	}
 
+	/**
+	 * 各ボタン、および、lotteryQuantityFormのリスナ登録をする。
+	 */
 	private void setListener() {
 
 		addButton.setOnClickListener(new OnClickListener(){	
@@ -99,28 +134,34 @@ public class LotteryEntryActivity extends AppCompatActivity {
 		lotteryQuantityForm.setOnClickListener(new OnClickListener(){	
 			@Override
 			public void onClick(View v) {
-				if(table.getChildCount() > 1){
 					onClickLotteryQuantityForm();
-				}else{
-					Toast.makeText(getApplicationContext(),Const.MORE_INPUT_MSG, Toast.LENGTH_SHORT).show();
-				}
 			}
 		});
 	}
 
+	/**
+	 * 入力欄を持つ行を追加する。
+	 */
 	private void onClickAddButton() {
 		addRowView("");
 
 	}
 
+	/**
+	 * 入力に不備がないかチェックし、エラーがあれば、エラーメッセージを出力。
+	 * エラーが無ければ、フォームのデータを取得し、次の画面で受け取れるようにする。
+	 */
 	private void onClickDoneButton() {
+
 		if(hasBlankData()){
 			Toast.makeText(getApplicationContext(),Const.HAS_BLANK_DATA_MSG, Toast.LENGTH_SHORT).show();
+
 		}else{
-			
+
 			Intent intent = new Intent(getApplication(), LotteryConfirmActivity.class);
 			lotteryList.clear();
-			
+
+			//抽選項目の取得
 			for(int i = 0; i < table.getChildCount(); i++){
 				TableRow tr = (TableRow) table.getChildAt(i);
 				LinearLayout ll = (LinearLayout)tr.getChildAt(0);
@@ -128,41 +169,55 @@ public class LotteryEntryActivity extends AppCompatActivity {
 				String str = ed.getText().toString();
 				lotteryList.add(str);
 			}
+
+			//データを渡す
 			intent.putStringArrayListExtra(Const.LOTTERY_LIST, lotteryList);
 			intent.putExtra(Const.LOTTERY_QUANTITY, lotteryQuantityForm.getText().toString());
-			
+
 			startActivity(intent);
 		}
 	}
 
+	/**
+	 * 抽選項目入力欄の数を取得し、2より小さかった場合はエラーメッセージ出力。
+	 * そうでない場合は、NumberPickerを持ったダイアログを表示し、抽選数の入力を受け付ける。
+	 * 入力された抽選数をlotteryQuantityFormに表示する。
+	 */
 	private void onClickLotteryQuantityForm() {
 
-		AlertDialog .Builder lotteryQuantityFormDialog = new AlertDialog.Builder(this);
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflater.inflate(R.xml.number_picker, null);
-		final NumberPicker np = (NumberPicker) v.findViewById(R.id.numberPicker);
+		if(table.getChildCount() < 2){
+			Toast.makeText(getApplicationContext(),Const.MORE_INPUT_MSG, Toast.LENGTH_SHORT).show();
 
-		np.setMaxValue(table.getChildCount() - 1);
-		np.setMinValue(1);
-		np.setValue(1);
+		}else{
+			AlertDialog .Builder lotteryQuantityFormDialog = new AlertDialog.Builder(this);
+			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View v = inflater.inflate(R.xml.number_picker, null);
+			final NumberPicker np = (NumberPicker) v.findViewById(R.id.numberPicker);
 
-		lotteryQuantityFormDialog.setView(np);
-		lotteryQuantityFormDialog.setTitle("抽選数入力");
+			np.setMaxValue(table.getChildCount() - 1);
+			np.setMinValue(1);
+			np.setValue(1);
 
-		lotteryQuantityFormDialog.setPositiveButton(Const.OK, new DialogInterface.OnClickListener () {
-			public void onClick(DialogInterface dialog, int which) {
-				lotteryQuantityForm.setText(String.valueOf(np.getValue()));
-			}	
-		});		
+			lotteryQuantityFormDialog.setView(np);
+			lotteryQuantityFormDialog.setTitle("抽選数入力");
 
-		lotteryQuantityFormDialog.setNegativeButton(Const.CANCEL, null);
+			lotteryQuantityFormDialog.setPositiveButton(Const.OK, new DialogInterface.OnClickListener () {
+				public void onClick(DialogInterface dialog, int which) {
+					lotteryQuantityForm.setText(String.valueOf(np.getValue()));
+				}	
+			});
 
-		lotteryQuantityFormDialog.create().show();		
+			lotteryQuantityFormDialog.setNegativeButton(Const.CANCEL, null);
 
-
+			lotteryQuantityFormDialog.create().show();
+		}
 	}
 
+	/**
+	 * @return 抽選項目入力フォームや抽選数入力フォームが空であるかどうか
+	 */
 	private boolean hasBlankData() {
+		
 		try{
 			for(int i = 0; i <formListSize; i++){
 				TableRow tr = (TableRow) table.getChildAt(i);
@@ -175,7 +230,7 @@ public class LotteryEntryActivity extends AppCompatActivity {
 			if(lotteryQuantityForm.getText().equals(null) || lotteryQuantityForm.getText().toString().equals("")){
 				return true;
 			}
-			
+
 		}catch(IndexOutOfBoundsException e){	
 			return true;
 		}
